@@ -17,6 +17,7 @@ app.get('/', (req, res, netx) => {
     Boletin.find({})
         .skip(desde)
         .limit(5)
+        .populate('usuario', 'nombre email')
         .exec(
             (err, boletines) => {
                 if (err) {
