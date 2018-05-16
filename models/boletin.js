@@ -7,4 +7,4 @@ var boletinSchema = new Schema({
     usuario: { type: Schema.Types.ObjectId, ref: 'Usuario' }
 }, { collection: 'boletines' });
 
-module.exports = mongoose.model('Hospital', boletinSchema);
+module.exports = mongoose.model('Boletin', boletinSchema);

@@ -16,6 +16,7 @@ app.use(bodyParser.json())
 
 // Importar Rutas
 var appRoutes = require('./routes/app');
+var busquedaRoutes = require('./routes/busqueda');
 var boletinRoutes = require('./routes/boletin');
 var emailRoutes = require('./routes/email');
 var usuarioRoutes = require('./routes/usuario');
@@ -28,6 +29,7 @@ mongoose.connection.openUri('mongodb://localhost:27017/mieryteran', (err, res) =
 })
 
 // Rutas
+app.use('/busqueda', busquedaRoutes)
 app.use('/boletin', boletinRoutes)
 app.use('/formulario', emailRoutes)
 app.use('/usuario', usuarioRoutes);
