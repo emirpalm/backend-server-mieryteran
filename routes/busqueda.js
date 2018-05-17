@@ -6,7 +6,47 @@ var Usuario = require('../models/usuario');
 // Inicializar variables
 var app = express();
 
-// Rutas
+// =======================================
+// Busqueda por Collection
+// =======================================
+app.get('/collection/:tabla/:busqueda', (req, res) => {
+    var busqueda = req.params.busqueda;
+    var tabla = req.params.tabla;
+    var regex = new RegExp(busqueda, 'i');
+
+    var promesa;
+
+    switch (tabla) {
+
+        case 'usuarios':
+            promesa = buscarUsuarios(busqueda, regex);
+            break;
+        case 'boletines':
+            promesa = buscarBoletines(busqueda, regex);
+            break;
+        default:
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'Los tipos de busqueda sólo son: Usuarios y Boletines',
+                error: { message: 'Tipo de tabla/collection no válido' }
+            });
+    }
+    promesa.then(data => {
+        res.status(200).json({
+            ok: true,
+            [tabla]: data
+        });
+    });
+
+});
+
+// =======================================
+// Fin Busqueda por Collection
+// =======================================
+
+// =======================================
+// Busqueda general
+// =======================================
 app.get('/todo/:busqueda', (req, res, netx) => {
 
     var busqueda = req.params.busqueda;
@@ -28,9 +68,7 @@ app.get('/todo/:busqueda', (req, res, netx) => {
 
 });
 
-// =======================================
-// Busqueda general
-// =======================================
+
 function buscarBoletines(busqueda, regex) {
 
     return new Promise((resolve, reject) => {
@@ -68,5 +106,9 @@ function buscarUsuarios(busqueda, regex) {
 
 }
 
-// export
+// =======================================
+// Fin Busqueda general
+// =======================================
+
+// Export
 module.exports = app;
