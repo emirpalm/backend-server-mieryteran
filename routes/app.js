@@ -6,7 +6,7 @@ var app = express();
 
 // Rutas
 app.get('/', (req, res, netx) => {
-    res.status(404).json({
+    res.status(200).json({
         ok: true,
         mensaje: 'Petición realizada correctamente'
     });
