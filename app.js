@@ -2,10 +2,15 @@
 var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
+var cors = require('cors');
 
 
 // Inicializar variables
 var app = express();
+
+app.use(cors({
+    origin: 'http://localhost:4200'
+}));
 
 
 // Body Parser
