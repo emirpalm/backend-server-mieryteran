@@ -9,6 +9,7 @@ var app = express();
 
 // Models
 var Usuario = require('../models/usuario');
+var Boletin = require('../models/boletin');
 
 // default options
 app.use(fileUpload());
@@ -19,7 +20,7 @@ app.put('/:tipo/:id', (req, res, next) => {
     var id = req.params.id;
 
     // tipos de colección
-    var tiposValidos = ['usuarios'];
+    var tiposValidos = ['usuarios', 'boletines'];
     if (tiposValidos.indexOf(tipo) < 0) {
         return res.status(400).json({
             ok: false,
@@ -43,7 +44,7 @@ app.put('/:tipo/:id', (req, res, next) => {
     var extensionArchivo = nombreCortado[nombreCortado.length - 1];
 
     // Sólo estas extensiones aceptamos
-    var extensionesValidas = ['png', 'jpg', 'gif', 'jpeg'];
+    var extensionesValidas = ['png', 'jpg', 'gif', 'jpeg', 'pdf'];
 
     if (extensionesValidas.indexOf(extensionArchivo) < 0) {
         return res.status(400).json({
@@ -121,6 +122,45 @@ function subirPorTipo(tipo, id, nombreArchivo, res) {
                     ok: true,
                     mensaje: 'Imagen de usuario actualizada',
                     usuario: usuarioActualizado
+                });
+
+            })
+
+
+        });
+
+    }
+
+    if (tipo === 'boletines') {
+
+        Boletin.findById(id, (err, boletin) => {
+
+            if (!boletin) {
+                return res.status(400).json({
+                    ok: true,
+                    mensaje: 'Boletin no existe',
+                    errors: { message: 'Boletin no existe' }
+                });
+            }
+
+
+            var pathViejo = './uploads/boletines/' + boletin.pdf;
+
+            // Si existe, elimina la imagen anterior
+            if (fs.existsSync(pathViejo)) {
+                fs.unlinkSync(pathViejo);
+            }
+
+            boletin.pdf = nombreArchivo;
+
+            boletin.save((err, boletinActualizado) => {
+
+                boletinActualizado.password = ':)';
+
+                return res.status(200).json({
+                    ok: true,
+                    mensaje: 'PDF de boletin actualizada',
+                    boletin: boletinActualizado
                 });
 
             })

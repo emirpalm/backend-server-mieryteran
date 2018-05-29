@@ -105,6 +105,7 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
     var boletin = new Boletin({
         titulo: body.titulo,
         descripcion: body.descripcion,
+        pdf: body.pdf,
         usuario: req.usuario._id
 
     });
