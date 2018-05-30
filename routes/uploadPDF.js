@@ -8,7 +8,7 @@ var fs = require('fs');
 var app = express();
 
 // Models
-var Usuario = require('../models/usuario');
+var Boletin = require('../models/boletin');
 
 // default options
 app.use(fileUpload());
@@ -19,7 +19,7 @@ app.put('/:tipo/:id', (req, res, next) => {
     var id = req.params.id;
 
     // tipos de colección
-    var tiposValidos = ['usuarios'];
+    var tiposValidos = ['boletines'];
     if (tiposValidos.indexOf(tipo) < 0) {
         return res.status(400).json({
             ok: false,
@@ -33,17 +33,17 @@ app.put('/:tipo/:id', (req, res, next) => {
         return res.status(400).json({
             ok: false,
             mensaje: 'No selecciono nada',
-            errors: { message: 'Debe de seleccionar una imagen' }
+            errors: { message: 'Debe de seleccionar un PDF' }
         });
     }
 
     // Obtener nombre del archivo
-    var archivo = req.files.imagen;
+    var archivo = req.files.pdf;
     var nombreCortado = archivo.name.split('.');
     var extensionArchivo = nombreCortado[nombreCortado.length - 1];
 
     // Sólo estas extensiones aceptamos
-    var extensionesValidas = ['png', 'jpg', 'gif', 'jpeg'];
+    var extensionesValidas = ['pdf'];
 
     if (extensionesValidas.indexOf(extensionArchivo) < 0) {
         return res.status(400).json({
@@ -91,36 +91,36 @@ app.put('/:tipo/:id', (req, res, next) => {
 
 function subirPorTipo(tipo, id, nombreArchivo, res) {
 
-    if (tipo === 'usuarios') {
+    if (tipo === 'boletines') {
 
-        Usuario.findById(id, (err, usuario) => {
+        Boletin.findById(id, (err, boletin) => {
 
-            if (!usuario) {
+            if (!boletin) {
                 return res.status(400).json({
                     ok: true,
-                    mensaje: 'Usuario no existe',
-                    errors: { message: 'Usuario no existe' }
+                    mensaje: 'Boletin no existe',
+                    errors: { message: 'Boletin no existe' }
                 });
             }
 
 
-            var pathViejo = './uploads/usuarios/' + usuario.img;
+            var pathViejo = './uploads/boletines/' + boletin.pdf;
 
             // Si existe, elimina la imagen anterior
             if (fs.existsSync(pathViejo)) {
                 fs.unlinkSync(pathViejo);
             }
 
-            usuario.img = nombreArchivo;
+            boletin.pdf = nombreArchivo;
 
-            usuario.save((err, usuarioActualizado) => {
+            boletin.save((err, boletinActualizado) => {
 
-                usuarioActualizado.password = ':)';
+                boletinActualizado.password = ':)';
 
                 return res.status(200).json({
                     ok: true,
-                    mensaje: 'Imagen de usuario actualizada',
-                    usuario: usuarioActualizado
+                    mensaje: 'PDF de boletin actualizada',
+                    boletin: boletinActualizado
                 });
 
             })
@@ -129,6 +129,7 @@ function subirPorTipo(tipo, id, nombreArchivo, res) {
         });
 
     }
+
 
 
 }

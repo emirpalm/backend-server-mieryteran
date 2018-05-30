@@ -21,6 +21,8 @@ app.use(bodyParser.json())
 
 // Importar Rutas
 var appRoutes = require('./routes/app');
+var pdfsRoutes = require('./routes/pdfs');
+var uploadPDFRoutes = require('./routes/uploadPDF');
 var imagenesRoutes = require('./routes/imagenes');
 var uploadRoutes = require('./routes/upload');
 var busquedaRoutes = require('./routes/busqueda');
@@ -36,6 +38,8 @@ mongoose.connection.openUri('mongodb://localhost:27017/mieryteran', (err, res) =
 })
 
 // Rutas
+app.use('/pdf', pdfsRoutes)
+app.use('/uploadPDF', uploadPDFRoutes)
 app.use('/img', imagenesRoutes)
 app.use('/upload', uploadRoutes)
 app.use('/busqueda', busquedaRoutes)
