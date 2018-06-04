@@ -31,6 +31,7 @@ var emailRoutes = require('./routes/email');
 var usuarioRoutes = require('./routes/usuario');
 var loginRoutes = require('./routes/login');
 var forgotpass = require('./routes/forgotpass');
+var resetpass = require('./routes/resetpass');
 
 // Conexión a la base de datos
 mongoose.connection.openUri('mongodb://localhost:27017/mieryteran', (err, res) => {
@@ -39,6 +40,7 @@ mongoose.connection.openUri('mongodb://localhost:27017/mieryteran', (err, res) =
 })
 
 // Rutas
+app.use('/reset_password', resetpass)
 app.use('/forgot_password', forgotpass)
 app.use('/pdf', pdfsRoutes)
 app.use('/uploadPDF', uploadPDFRoutes)
