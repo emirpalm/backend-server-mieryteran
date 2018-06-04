@@ -41,16 +41,19 @@ app.get('/', (req, res) => {
     return res.sendFile(path.resolve('./public/reset-password.html'));
 });
 
-app.post('/', (req, res) => {
+app.post('/', (req, res, next) => {
     Usuario.findOne({
-        reset_password_token: req.body.token
-    }).exec(function(err, user) {
+        reset_password_token: req.body.token,
+        reset_password_expires: {
+            $gt: Date.now()
+        }
+    }).exec((err, user) => {
         if (!err && user) {
             if (req.body.newPassword === req.body.verifyPassword) {
                 user.password = bcrypt.hashSync(req.body.newPassword, 10);
                 user.reset_password_token = undefined;
                 user.reset_password_expires = undefined;
-                user.save(function(err) {
+                user.save((err) => {
                     if (err) {
                         return res.status(422).send({
                             message: err
@@ -60,15 +63,15 @@ app.post('/', (req, res) => {
                             to: user.email,
                             from: email,
                             template: 'reset-password-email',
-                            subject: 'Password Reset Confirmation',
+                            subject: 'Confirmación de contraseña restablecida',
                             context: {
                                 name: user.nombre.split(' ')[0]
                             }
                         };
 
-                        smtpTransport.sendMail(data, function(err) {
+                        smtpTransport.sendMail(data, (err) => {
                             if (!err) {
-                                return res.json({ message: 'Password reset' });
+                                return res.json({ message: 'Contraseña Restablecida' });
                             } else {
                                 return done(err);
                             }
@@ -77,12 +80,12 @@ app.post('/', (req, res) => {
                 });
             } else {
                 return res.status(422).send({
-                    message: 'Passwords do not match'
+                    message: 'Las contraseñas no coinciden'
                 });
             }
         } else {
             return res.status(400).send({
-                message: 'Password reset token is invalid or has expired.'
+                message: 'El token de restablecimiento de contraseña no es válido o ha caducado.'
             });
         }
     });

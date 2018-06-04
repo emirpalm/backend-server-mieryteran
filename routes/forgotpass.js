@@ -43,7 +43,7 @@ app.get('/', (req, res) => {
 
 app.post('/', (req, res) => {
     async.waterfall([
-        function(done) {
+        (done) => {
             Usuario.findOne({
                 email: req.body.email
             }).exec(
@@ -59,31 +59,31 @@ app.post('/', (req, res) => {
                     }
                 });
         },
-        function(user, done) {
+        (user, done) => {
             // create the random token
-            crypto.randomBytes(20, function(err, buffer) {
+            crypto.randomBytes(20, (err, buffer) => {
                 var token = buffer.toString('hex');
                 done(err, user, token);
             });
         },
-        function(user, token, done) {
-            Usuario.findByIdAndUpdate({ _id: user._id }, { reset_password_token: token, reset_password_expires: Date.now() + 86400000 }, { upsert: true, new: true }).exec(function(err, new_user) {
+        (user, token, done) => {
+            Usuario.findByIdAndUpdate({ _id: user._id }, { reset_password_token: token, reset_password_expires: Date.now() + 3600000 }, { upsert: true, new: true }).exec(function(err, new_user) {
                 done(err, token, new_user);
             });
         },
-        function(token, user, done) {
+        (token, user, done) => {
             var data = {
                 to: user.email,
                 from: email,
                 template: 'forgot-password-email',
-                subject: '¡MyT PASSWORD RESET!',
+                subject: '¡MyT Restablecimiento de contraseña!',
                 context: {
                     url: 'http://localhost:3000/reset_password?token=' + token,
                     name: user.nombre.split(' ')[0]
                 }
             };
 
-            smtpTransport.sendMail(data, function(err) {
+            smtpTransport.sendMail(data, (err) => {
                 if (!err) {
                     return res.json({ message: 'Por favor revise su correo electrónico para obtener más instrucciones' });
                 } else {
@@ -91,7 +91,7 @@ app.post('/', (req, res) => {
                 }
             });
         }
-    ], function(err) {
+    ], (err) => {
         return res.status(422).json({ message: err });
     });
 });
