@@ -68,6 +68,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
         boletin.titulo = body.titulo;
         boletin.descripcion = body.descripcion;
+        boletin.fechapublicado = Date.now();
         boletin.usuario = req.usuario._id;
 
 
@@ -106,6 +107,7 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
         titulo: body.titulo,
         descripcion: body.descripcion,
         pdf: body.pdf,
+        fechapublicado: Date.now(),
         usuario: req.usuario._id
 
     });
