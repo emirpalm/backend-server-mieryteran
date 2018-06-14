@@ -1,9 +1,9 @@
 // Requires
 var express = require('express');
 var mongoose = require('mongoose');
+var mysql = require('mysql');
 var bodyParser = require('body-parser');
 var cors = require('cors');
-
 
 // Inicializar variables
 var app = express();
@@ -32,14 +32,30 @@ var usuarioRoutes = require('./routes/usuario');
 var loginRoutes = require('./routes/login');
 var forgotpass = require('./routes/forgotpass');
 var resetpass = require('./routes/resetpass');
+var prueba = require('./routes/prueba');
 
 // Conexión a la base de datos
 mongoose.connection.openUri('mongodb://localhost:27017/mieryteran', (err, res) => {
     if (err) throw err;
-    console.log('Base de datos: \x1b[32m%s\x1b[0m', 'online');
+    console.log('Base de datos mongoose: \x1b[32m%s\x1b[0m', 'online');
 })
 
+var connection = mysql.createConnection({
+    host: '192.168.2.205',
+    port: '3307',
+    user: 'root',
+    password: 'fmat*0348',
+    database: 'myt'
+});
+
+connection.connect((err) => {
+    if (err) throw err;
+    console.log('Base de datos mysql: \x1b[32m%s\x1b[0m', 'online');
+})
+
+
 // Rutas
+app.use('/prueba', prueba);
 app.use('/reset_password', resetpass)
 app.use('/forgot_password', forgotpass)
 app.use('/pdf', pdfsRoutes)
