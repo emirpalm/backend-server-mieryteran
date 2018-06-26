@@ -1,13 +1,13 @@
 // Requires
 var express = require('express');
-var Prueba = require('../models/embarqueModel');
+var Embarque = require('../models/embarque');
 
 // Inicializar variables
 var app = express();
 
 //mostramos todos los pedimentos 
-app.get("/", (req, res) => {
-    Prueba.getPedimentos((err, data) => {
+app.get('/', (req, res) => {
+    Embarque.getPedimentos((err, data) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -23,12 +23,12 @@ app.get("/", (req, res) => {
 });
 
 //obtiene un pedimentos por su idPedimento
-app.get("/:id", (req, res) => {
+app.get('/:id', (req, res) => {
     //id del usuario
     var id = req.params.id;
     //solo actualizamos si la id es un número
     if (!isNaN(id)) {
-        Prueba.getPedimento(id, (err, data) => {
+        Embarque.getPedimento(id, (err, data) => {
             if (err) {
                 return res.status(500).json({
                     ok: false,
@@ -51,6 +51,41 @@ app.get("/:id", (req, res) => {
             }
         });
     }
+
+});
+
+//obtiene un pedimentos por su idPedimento
+app.post('/', (req, res) => {
+    //creamos un objeto con los datos a buscra del embarque
+    var embarqueData = {
+        idPatente: req.body.idPatente,
+        IdSeccion: req.body.IdSeccion,
+        FIni: req.body.FIni,
+        FFin: req.body.FFin
+    };
+    Embarque.getEmbarque(embarqueData, (err, data) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error al buscar pedimento',
+                errores: err
+            });
+        }
+        //si el pedimento existe lo mostramos en formato json
+        if (typeof data !== 'undefined' && data.length > 0) {
+            res.status(200).json({
+                ok: true,
+                data
+            });
+        } else {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'El pedimento con el id ' + embarqueData.idPatente + ' no existe',
+                errores: { message: 'No existe un pedimento con ese ID' }
+            });
+        }
+    });
+
 
 });
 
