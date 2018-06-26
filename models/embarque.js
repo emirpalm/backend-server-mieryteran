@@ -38,4 +38,4 @@ pruebaModel.getPedimento = (id, callback) => {
 }
 
 //exportamos el objeto para tenerlo disponible en la zona de rutas
-module.exports = pruebaModel;
+module.exports = embarqueModel;

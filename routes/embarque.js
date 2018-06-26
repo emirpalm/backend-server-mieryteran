@@ -1,6 +1,6 @@
 // Requires
 var express = require('express');
-var Prueba = require('../models/prueba');
+var Prueba = require('../models/embarqueModel');
 
 // Inicializar variables
 var app = express();

@@ -32,7 +32,7 @@ var usuarioRoutes = require('./routes/usuario');
 var loginRoutes = require('./routes/login');
 var forgotpass = require('./routes/forgotpass');
 var resetpass = require('./routes/resetpass');
-var prueba = require('./routes/prueba');
+var embarque = require('./routes/embarque');
 
 // Conexión a la base de datos
 mongoose.connection.openUri('mongodb://localhost:27017/mieryteran', (err, res) => {
@@ -55,7 +55,7 @@ connection.connect((err) => {
 
 
 // Rutas
-app.use('/prueba', prueba);
+app.use('/embarque', embarque);
 app.use('/reset_password', resetpass)
 app.use('/forgot_password', forgotpass)
 app.use('/pdf', pdfsRoutes)
