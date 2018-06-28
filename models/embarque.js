@@ -38,7 +38,7 @@ embarqueModel.getPedimento = (id, callback) => {
 }
 
 //obtenemos los pedimentos
-embarqueModel.getEmbarque = (embarqueData, callback) => {
+embarqueModel.getEmbarque = (embarqueData, desde, callback) => {
     var filtro = 'WHERE oppedimentos.IdPatente=' + connection.escape(embarqueData.idPatente) + 'AND optramites.FechaTramite>=' + connection.escape(embarqueData.FIni) + 'AND optramites.FechaTramite<=' + connection.escape(embarqueData.FFin);
     if (embarqueData.IdSeccion > 0) {
         filtro += ' AND oppedimentos.IdSeccion=' + connection.escape(embarqueData.IdSeccion);
@@ -56,7 +56,7 @@ embarqueModel.getEmbarque = (embarqueData, callback) => {
     if (!string.IsNullOrEmpty(Viaje))
         filtros += " AND opviajes.viaje LIKE ?viaje ";*/
     if (connection) {
-        var sql = 'SELECT oppedimentos.IdPedimento,oppedimentos.pedimento,oppedimentos.IdPatente,agpatentes.Patente,oppedimentos.Year,' +
+        var sql = '(SELECT oppedimentos.IdPedimento,oppedimentos.pedimento,oppedimentos.IdPatente,agpatentes.Patente,oppedimentos.Year,' +
             '0 AS Remesa,oppedimentos.CvePedimento,agtipospedimento.TipoPedimento,agclientes.Cliente,oppedimentos.ImportExport,' +
             'opcargas.IdCarga,opcargas.TipoCarga,opguias.Guia,opcargas.contenedor,opcargas.Sello,optramites.Observaciones,' +
             'IFNULL(opviajes.viaje,null) AS Viaje,opviajes.FArribo,IFNULL(agbuques.buque,null) AS Buque,' +
@@ -83,9 +83,9 @@ embarqueModel.getEmbarque = (embarqueData, callback) => {
             'LEFT JOIN agbuques ON opviajes.IdBuque = agbuques.IdBuque ' +
             'LEFT JOIN opdodacarga ON opdodacarga.IdCarga=opcargas.IdCarga ' +
             'LEFT JOIN opdodas ON opdodas.IdDoda=opdodacarga.IdDoda ' +
-            filtro +
-            "UNION " +
-            'SELECT oppedimentos.IdPedimento,oppedimentos.pedimento,oppedimentos.IdPatente,agpatentes.Patente,oppedimentos.Year,' +
+            filtro + ')' +
+            " UNION " +
+            '(SELECT oppedimentos.IdPedimento,oppedimentos.pedimento,oppedimentos.IdPatente,agpatentes.Patente,oppedimentos.Year,' +
             'IFNULL(opremesas.remesa,0) AS Remesa,oppedimentos.CvePedimento,agtipospedimento.TipoPedimento,agclientes.Cliente,oppedimentos.ImportExport,' +
             'opcargas.IdCarga,opcargas.TipoCarga,opguias.Guia,opcargas.contenedor,opcargas.Sello,optramites.Observaciones,' +
             'IFNULL(opviajes.viaje,null) AS Viaje,opviajes.FArribo,IFNULL(agbuques.buque,null) AS Buque,' +
@@ -113,9 +113,9 @@ embarqueModel.getEmbarque = (embarqueData, callback) => {
             'LEFT JOIN agbuques ON opviajes.IdBuque = agbuques.IdBuque ' +
             'LEFT JOIN opdodacarga ON opdodacarga.IdCarga=opcargas.IdCarga ' +
             'LEFT JOIN opdodas ON opdodas.IdDoda=opdodacarga.IdDoda ' +
-            filtro +
-            "UNION " +
-            'SELECT oppedimentos.IdPedimento,oppedimentos.pedimento,oppedimentos.IdPatente,agpatentes.Patente,oppedimentos.Year,' +
+            filtro + ')' +
+            " UNION " +
+            '(SELECT oppedimentos.IdPedimento,oppedimentos.pedimento,oppedimentos.IdPatente,agpatentes.Patente,oppedimentos.Year,' +
             'IFNULL(opparciales.Parcial,0) AS Remesa,oppedimentos.CvePedimento,agtipospedimento.TipoPedimento,agclientes.Cliente,oppedimentos.ImportExport,' +
             'opcargas.IdCarga,opcargas.TipoCarga,opguias.Guia,opcargas.contenedor,opcargas.Sello,optramites.Observaciones,' +
             'IFNULL(opviajes.viaje,null) AS Viaje,opviajes.FArribo,IFNULL(agbuques.buque,null) AS Buque,' +
@@ -141,7 +141,7 @@ embarqueModel.getEmbarque = (embarqueData, callback) => {
             'LEFT JOIN agbuques ON opviajes.IdBuque = agbuques.IdBuque ' +
             'LEFT JOIN opdodacarga ON opdodacarga.IdCarga=opcargas.IdCarga ' +
             'LEFT JOIN opdodas ON opdodas.IdDoda=opdodacarga.IdDoda ' +
-            filtro;
+            filtro + ')' + ' LIMIT ' + [desde] + ',2';
         connection.query(sql, (error, row) => {
             if (error) {
                 throw error;

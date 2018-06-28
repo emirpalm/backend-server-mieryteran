@@ -63,7 +63,10 @@ app.post('/', (req, res) => {
         FIni: req.body.FIni,
         FFin: req.body.FFin
     };
-    Embarque.getEmbarque(embarqueData, (err, data) => {
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
+
+    Embarque.getEmbarque(embarqueData, desde, (err, data) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
