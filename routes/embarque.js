@@ -56,12 +56,18 @@ app.get('/:id', (req, res) => {
 
 //obtiene un pedimentos por su idPedimento
 app.post('/', (req, res) => {
-    //creamos un objeto con los datos a buscra del embarque
+    //creamos un objeto con los datos a buscar del embarque
     var embarqueData = {
         idPatente: req.body.idPatente,
-        IdSeccion: req.body.IdSeccion,
-        FIni: req.body.FIni,
-        FFin: req.body.FFin
+        fIni: req.body.fIni,
+        fFin: req.body.fFin,
+        idSeccion: req.body.IdSeccion,
+        idCliente: req.body.idCliente,
+        importExport: req.body.importExport,
+        pedimento: req.body.pedimento,
+        contenedor: req.body.contenedor,
+        guia: req.body.guia,
+        viaje: req.body.viaje
     };
     var desde = req.query.desde || 0;
     desde = Number(desde);

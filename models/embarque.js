@@ -1,19 +1,11 @@
-var mysql = require('mysql');
-
-var connection = mysql.createConnection({
-    host: '192.168.2.205',
-    port: '3307',
-    user: 'root',
-    password: 'fmat*0348',
-    database: 'myt'
-});
+var database = require('../config/mysql');
 
 var embarqueModel = {};
 
 //obtenemos todos los pedimentos
 embarqueModel.getPedimentos = (callback) => {
-    if (connection) {
-        connection.query('SELECT * from myt.oppedimentos LIMIT 0, 10', (error, rows) => {
+    if (database.connection) {
+        database.connection.query('SELECT * from myt.oppedimentos LIMIT 0, 10', (error, rows) => {
             if (error) {
                 throw error;
             } else {
@@ -25,9 +17,9 @@ embarqueModel.getPedimentos = (callback) => {
 
 //obtenemos un pedimento por su id
 embarqueModel.getPedimento = (id, callback) => {
-    if (connection) {
-        var sql = 'SELECT * from myt.oppedimentos WHERE IdPedimento = ' + connection.escape(id);
-        connection.query(sql, (error, row) => {
+    if (database.connection) {
+        var sql = 'SELECT * from myt.oppedimentos WHERE IdPedimento = ' + database.connection.escape(id);
+        database.connection.query(sql, (error, row) => {
             if (error) {
                 throw error;
             } else {
@@ -39,23 +31,30 @@ embarqueModel.getPedimento = (id, callback) => {
 
 //obtenemos los pedimentos
 embarqueModel.getEmbarque = (embarqueData, desde, callback) => {
-    var filtro = 'WHERE oppedimentos.IdPatente=' + connection.escape(embarqueData.idPatente) + 'AND optramites.FechaTramite>=' + connection.escape(embarqueData.FIni) + 'AND optramites.FechaTramite<=' + connection.escape(embarqueData.FFin);
-    if (embarqueData.IdSeccion > 0) {
-        filtro += ' AND oppedimentos.IdSeccion=' + connection.escape(embarqueData.IdSeccion);
+    var filtro = 'WHERE oppedimentos.IdPatente=' + database.connection.escape(embarqueData.idPatente) + 'AND optramites.FechaTramite>=' + database.connection.escape(embarqueData.fIni) + 'AND optramites.FechaTramite<=' + database.connection.escape(embarqueData.fFin);
+    if (embarqueData.idSeccion > 0) {
+        filtro += ' AND oppedimentos.IdSeccion=' + database.connection.escape(embarqueData.idSeccion);
     }
-    /*if (IdCliente > 0)
-        filtros += " AND oppedimentos.IdCliente = ?cliente ";
-    if (ImportExport > 0)
-        filtros += " AND oppedimentos.ImportExport = ?importexport ";
-    if (!string.IsNullOrEmpty(Pedimento))
-        filtros += " AND oppedimentos.Pedimento LIKE ?pedimento ";
-    if (!string.IsNullOrEmpty(Contenedor))
-        filtros += " AND opcargas.contenedor LIKE ?contenedor ";
-    if (!string.IsNullOrEmpty(Guia))
-        filtros += " AND opguias.guia LIKE ?guia ";
-    if (!string.IsNullOrEmpty(Viaje))
-        filtros += " AND opviajes.viaje LIKE ?viaje ";*/
-    if (connection) {
+    if (embarqueData.idCliente > 0) {
+        filtro += ' AND oppedimentos.IdCliente =' + database.connection.escape(embarqueData.idCliente);
+    }
+    if (embarqueData.importExport.length == 1) {
+        filtro += ' AND oppedimentos.ImportExport =' + database.connection.escape(embarqueData.importExport);
+    }
+    if (embarqueData.pedimento > 0) {
+        filtro += ' AND oppedimentos.Pedimento LIKE ' + database.connection.escape(embarqueData.pedimento);
+    }
+    if (embarqueData.contenedor.length == 1) {
+        filtro += ' AND opcargas.contenedor LIKE ' + database.connection.escape(embarqueData.contenedor);
+    }
+    if (embarqueData.guia.length == 1) {
+        filtro += ' AND opguias.guia LIKE ' + database.connection.escape(embarqueData.guia);
+    }
+    if (embarqueData.viaje.length == 1) {
+        filtro += ' AND opviajes.viaje LIKE ' + database.connection.escape(embarqueData.viaje);
+    }
+
+    if (database.connection) {
         var sql = '(SELECT oppedimentos.IdPedimento,oppedimentos.pedimento,oppedimentos.IdPatente,agpatentes.Patente,oppedimentos.Year,' +
             '0 AS Remesa,oppedimentos.CvePedimento,agtipospedimento.TipoPedimento,agclientes.Cliente,oppedimentos.ImportExport,' +
             'opcargas.IdCarga,opcargas.TipoCarga,opguias.Guia,opcargas.contenedor,opcargas.Sello,optramites.Observaciones,' +
@@ -141,12 +140,13 @@ embarqueModel.getEmbarque = (embarqueData, desde, callback) => {
             'LEFT JOIN agbuques ON opviajes.IdBuque = agbuques.IdBuque ' +
             'LEFT JOIN opdodacarga ON opdodacarga.IdCarga=opcargas.IdCarga ' +
             'LEFT JOIN opdodas ON opdodas.IdDoda=opdodacarga.IdDoda ' +
-            filtro + ')' + ' LIMIT ' + [desde] + ',2';
-        connection.query(sql, (error, row) => {
+            filtro + ')' + ' LIMIT ' + [desde] + ',10';
+        database.connection.query(sql, (error, row) => {
             if (error) {
                 throw error;
             } else {
                 callback(null, row);
+                //database.connection.end();
             }
         });
     }
