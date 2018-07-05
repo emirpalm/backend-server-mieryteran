@@ -2,6 +2,7 @@
 var express = require('express');
 var Boletin = require('../models/boletin');
 var Usuario = require('../models/usuario');
+var Embarque = require('../models/embarque');
 
 // Inicializar variables
 var app = express();
@@ -12,17 +13,22 @@ var app = express();
 app.get('/collection/:tabla/:busqueda', (req, res) => {
     var busqueda = req.params.busqueda;
     var tabla = req.params.tabla;
-    var regex = new RegExp(busqueda, 'i');
+    var regexp = new RegExp(busqueda, 'i');
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
 
     var promesa;
 
     switch (tabla) {
 
         case 'usuarios':
-            promesa = buscarUsuarios(busqueda, regex);
+            promesa = buscarUsuarios(busqueda, regexp);
             break;
         case 'boletines':
-            promesa = buscarBoletines(busqueda, regex);
+            promesa = buscarBoletines(busqueda, regexp);
+            break;
+        case 'embarques':
+            promesa = buscarEmbarques(busqueda, desde);
             break;
         default:
             return res.status(400).json({
@@ -50,11 +56,11 @@ app.get('/collection/:tabla/:busqueda', (req, res) => {
 app.get('/todo/:busqueda', (req, res, netx) => {
 
     var busqueda = req.params.busqueda;
-    var regex = new RegExp(busqueda, 'i');
+    var regexp = new RegExp(busqueda, 'i');
 
     Promise.all([
-            buscarBoletines(busqueda, regex),
-            buscarUsuarios(busqueda, regex)
+            buscarBoletines(busqueda, regexp),
+            buscarUsuarios(busqueda, regexp)
         ])
         .then(respuesta => {
             res.status(200).json({
@@ -69,11 +75,11 @@ app.get('/todo/:busqueda', (req, res, netx) => {
 });
 
 
-function buscarBoletines(busqueda, regex) {
+function buscarBoletines(busqueda, regexp) {
 
     return new Promise((resolve, reject) => {
 
-        Boletin.find({ titulo: regex })
+        Boletin.find({ titulo: regexp })
             .populate('usuario', 'nombre email')
             .exec((err, boletines) => {
 
@@ -88,12 +94,12 @@ function buscarBoletines(busqueda, regex) {
 
 }
 
-function buscarUsuarios(busqueda, regex) {
+function buscarUsuarios(busqueda, regexp) {
 
     return new Promise((resolve, reject) => {
 
         Usuario.find({}, 'img nombre email role')
-            .or([{ 'nombre': regex }, { 'email': regex }])
+            .or([{ 'nombre': regexp }, { 'email': regexp }])
             .exec((err, usuarios) => {
                 if (err) {
                     reject('Error al cargar usuarios', err)
@@ -102,6 +108,21 @@ function buscarUsuarios(busqueda, regex) {
                 }
             });
 
+    });
+
+}
+
+function buscarEmbarques(busqueda, desde) {
+
+    return new Promise((resolve, reject) => {
+
+        Embarque.getEmbarqueREGEXP(busqueda, desde, (err, data) => {
+            if (err) {
+                reject('Error al cargar embarques', err)
+            } else {
+                resolve(data)
+            }
+        });
     });
 
 }
