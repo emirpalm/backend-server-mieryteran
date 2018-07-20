@@ -35,10 +35,11 @@ var resetpass = require('./routes/resetpass');
 var embarque = require('./routes/embarque');
 
 // Conexión a la base de datos Mongoose
-mongoose.connection.openUri('mongodb://localhost:27017/mieryteran', (err, res) => {
+mongoose.connect('mongodb://localhost:27017/mieryteran', { useNewUrlParser: true }, (err, res) => {
     if (err) throw err;
     console.log('Base de datos Mongoose: \x1b[32m%s\x1b[0m', 'online');
 })
+
 
 // Conexión a la base de datos MySQL
 database.connect();

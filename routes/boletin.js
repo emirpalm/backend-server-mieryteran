@@ -26,7 +26,7 @@ app.get('/', (req, res, netx) => {
                         mensaje: 'Error cargando boletines'
                     });
                 }
-                Boletin.count({}, (err, conteo) => {
+                Boletin.countDocuments({}, (err, conteo) => {
                     res.status(200).json({
                         ok: true,
                         boletines,

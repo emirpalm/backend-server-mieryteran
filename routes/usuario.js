@@ -27,7 +27,7 @@ app.get('/', (req, res, netx) => {
                         mensaje: 'Error cargando usuario'
                     });
                 }
-                Usuario.count({}, (err, conteo) => {
+                Usuario.countDocuments({}, (err, conteo) => {
                     res.status(200).json({
                         ok: true,
                         usuarios,
