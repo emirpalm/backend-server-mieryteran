@@ -34,28 +34,30 @@ app.get('/', (req, res) => {
 
     //solo actualizamos si la id es un número
     Embarque.getEmbarqueId(id, fechactual, desde, (err, embarques) => {
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                mensaje: 'Error al buscar embarque',
-                errores: err
-            });
-        }
-        //si el pedimento existe lo mostramos en formato json
-        if (typeof embarques !== 'undefined' && embarques.length > 0) {
-            res.status(200).json({
-                ok: true,
-                embarques
-            });
-        } else {
-            return res.status(400).json({
-                ok: false,
-                mensaje: 'El embarque con el id ' + id + ' no existe',
-                errores: { message: 'No existe un embarque con ese ID' }
-            });
-        }
+        Embarque.count(id, fechactual, (err, conteo) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error al buscar embarque',
+                    errores: err
+                });
+            }
+            //si el pedimento existe lo mostramos en formato json
+            if (typeof embarques !== 'undefined' && embarques.length > 0) {
+                res.status(200).json({
+                    ok: true,
+                    embarques,
+                    total: conteo[0].total
+                });
+            } else {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'El embarque con el id ' + id + ' no existe',
+                    errores: { message: 'No existe un embarque con ese ID' }
+                });
+            }
+        })
     });
-
 
 });
 
