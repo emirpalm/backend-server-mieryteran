@@ -21,6 +21,8 @@
         "mongoose-unique-validator": "^2.0.1",
         "mysql": "github:mysqljs/mysql",
         "nodemailer": "^4.6.7",
-        "nodemailer-express-handlebars": "^3.0.0"
+        "nodemailer-express-handlebars": "^3.0.0",
+        "request": "^2.87.0",
+        "request-promise": "^4.2.2"
     }
 }

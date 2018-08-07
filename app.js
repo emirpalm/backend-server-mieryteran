@@ -33,6 +33,7 @@ var loginRoutes = require('./routes/login');
 var forgotpass = require('./routes/forgotpass');
 var resetpass = require('./routes/resetpass');
 var embarque = require('./routes/embarque');
+var recaptcha = require('./routes/recaptcha');
 
 // Conexión a la base de datos Mongoose
 mongoose.connect('mongodb://localhost:27017/mieryteran', { useNewUrlParser: true }, (err, res) => {
@@ -45,6 +46,7 @@ mongoose.connect('mongodb://localhost:27017/mieryteran', { useNewUrlParser: true
 database.connect();
 
 // Rutas
+app.use('/validate_captcha', recaptcha);
 app.use('/embarque', embarque);
 app.use('/reset_password', resetpass)
 app.use('/forgot_password', forgotpass)
